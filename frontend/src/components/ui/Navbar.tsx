@@ -110,7 +110,7 @@ export function Navbar() {
                     border: "1px solid rgba(255,255,255,0.25)",
                     background: "transparent",
                     fontSize: "0.875rem",
-                    fontWeight: 600,
+                    fontWeight: 500,
                     color: "#FFFFFF",
                     letterSpacing: "0.01em",
                     transition:
