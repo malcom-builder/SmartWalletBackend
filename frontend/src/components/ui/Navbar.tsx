@@ -109,6 +109,7 @@ export function Navbar() {
                     borderRadius: "8px",
                     border: "1px solid rgba(255,255,255,0.25)",
                     background: "transparent",
+                    fontFamily: "var(--font-sora), var(--font-body), sans-serif",
                     fontSize: "0.875rem",
                     fontWeight: 500,
                     color: "#FFFFFF",
