@@ -3,6 +3,7 @@ import { Headline } from "@/components/ui/Headline";
 import { Starfield } from "@/components/ui/Starfield";
 import { Navbar } from "@/components/ui/Navbar";
 import { Footer } from "@/components/ui/Footer";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -25,7 +26,9 @@ export default function Home() {
           </p>
 
           <div className="flex items-center gap-4">
-            <Button variant="primary">Create account</Button>
+            <Link href="/auth/register" style={{ textDecoration: 'none' }}>
+              <Button variant="primary">Create account</Button>
+            </Link>
             <Button variant="secondary">View documentation</Button>
           </div>
         </div>

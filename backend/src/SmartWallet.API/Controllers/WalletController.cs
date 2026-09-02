@@ -43,7 +43,7 @@ namespace SmartWallet.API.Controllers
             return Ok(responses);
         }
 
-        [Authorize(Policy = "SameUserOrAdmin")]
+        [Authorize]
         [HttpGet("by-alias/{alias}")]
         public async Task<ActionResult<WalletResponse>> GetByAlias(string alias)
         {

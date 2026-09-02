@@ -1,4 +1,4 @@
-﻿using SmartWallet.Application.Abstractions;
+using SmartWallet.Application.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using SmartWallet.Domain.Entities;
 
@@ -30,7 +30,11 @@ namespace SmartWallet.Infrastructure.Persistence.Repositories
         public async Task<List<Transaction>> GetByWalletAsync(Guid walletId)
         {
             return await _context.Transactions
-                .Where(t => t.WalletId == walletId).OrderByDescending(t => t.CreatedAt).ToListAsync();
+                .Include(t => t.Wallet)
+                .Include(t => t.DestinationWallet)
+                .Where(t => t.WalletId == walletId || t.DestinationWalletId == walletId)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
         }
 
         // --- obtiene todas las transacciones dentro de un rango de fechas ---

@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard");
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -75,30 +78,22 @@ export function Navbar() {
             aria-label="Main navigation"
           >
             {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center hover:opacity-80 transition-opacity select-none"
-              style={{
-                textDecoration: "none",
-                fontFamily: "var(--font-sora), sans-serif",
-                fontWeight: 700,
-                fontSize: "1rem",
-                letterSpacing: "-0.02em",
-              }}
-              aria-label="malcom.builder / SMARTWALLET"
-            >
-              <span style={{ color: "#FFFFFF" }}>malcom</span>
-              <span style={{ color: "#FFFFFF", fontFamily: "var(--font-mono), monospace", fontWeight: 600 }}>.</span>
-              <span style={{ color: "#FFFFFF" }}>builder</span>
-              <span style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-mono), monospace", fontSize: "11px", marginLeft: "8px" }}>/</span>
-              <span style={{ fontFamily: "var(--font-syne), sans-serif", fontWeight: 700, fontSize: "11px", letterSpacing: "0.05em", color: "rgba(255,255,255,0.9)", marginLeft: "4px" }}>
-                SMARTWALLET
-              </span>
-            </Link>
+            <div className="flex items-center gap-8">
+              <Link
+                href="/"
+                className="flex items-center hover:opacity-80 transition-opacity select-none"
+                style={{ textDecoration: "none" }}
+                aria-label="SMARTWALLET"
+              >
+                <span style={{ fontFamily: "var(--font-syne), sans-serif", fontWeight: 700, fontSize: "0.875rem", letterSpacing: "0.05em", color: "#FFFFFF" }}>
+                  SMARTWALLET
+                </span>
+              </Link>
+            </div>
 
             {/* Controls */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Link href="/dashboard" style={{ textDecoration: "none" }}>
+              <Link href="/auth/login" style={{ textDecoration: "none" }}>
                 <span
                   className="navbar-cta"
                   style={{

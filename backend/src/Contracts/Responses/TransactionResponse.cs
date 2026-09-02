@@ -1,4 +1,4 @@
-﻿
+
 namespace Contracts.Responses
 {
     public record TransactionResponse(
@@ -9,6 +9,8 @@ namespace Contracts.Responses
         string CurrencyCode,
         string Status,
         Guid WalletId,
-        Guid? DestinationWalletId
+        Guid? DestinationWalletId,
+        string? WalletAlias,
+        string? DestinationWalletAlias
         );
 }
