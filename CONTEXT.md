@@ -43,6 +43,11 @@
 - No se ha implementado FluentValidation ni validaciones complejas fuera de los DataAnnotations del modelo.
 
 ## 05 — Log de Intervenciones (LIFO)
+- **Septiembre 2026:** Rediseño integral del frontend (Dashboard y Modales).
+  - Implementación de la estética monocromática minimalista (Deep Obsidian & Pure White) en toda la UI del Dashboard.
+  - Refactorización de layout, corrigiendo alineaciones de flexbox (evitando encogimiento del Header con `shrink-0`) y estabilizando el canvas de fondo mediante tarjetas opacas `#0a0a0a`.
+  - Rediseño de la Smart Card a formato vertical inmersivo (`aspect-[1/1.586]`), resolviendo desbordamiento de números, superposición del logo con el CVV, y vinculando correctamente el endpoint de usuario (`/User/{id}`).
+  - Compactación extrema de modales transaccionales (Send, Receive, Swap) para encaje perfecto sin scroll vertical en laptops, y ocultamiento global de spin buttons en inputs numéricos.
 
 - **Agosto 2026:** Refactorización arquitectónica y de seguridad integral tras auditoría (`/new-project`).
   - Migración al patrón **CQRS con MediatR** en el 100% de la aplicación, eliminando servicios monolíticos.
@@ -50,3 +55,4 @@
   - Implementación de **Mapster** automatizando el mapeo de Entidades a DTOs.
   - Configuración del **Manejo Global de Excepciones** (`IExceptionHandler` + `ProblemDetails`).
   - Hashing seguro de contraseñas con **BCrypt.Net-Next**, resolviendo vulnerabilidad crítica.
+
