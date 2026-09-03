@@ -9,7 +9,7 @@ interface HeadlineProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 export function Headline({ level = 1, className = "", children, ...props }: HeadlineProps) {
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: -1000, y: -1000 });
+  const [mousePosition, setMousePosition] = useState({ x: -1000, y: -1000, pctX: 50, pctY: 50 });
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLHeadingElement>) => {
@@ -18,6 +18,8 @@ export function Headline({ level = 1, className = "", children, ...props }: Head
     setMousePosition({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
+      pctX: ((e.clientX - rect.left) / rect.width) * 100,
+      pctY: ((e.clientY - rect.top) / rect.height) * 100,
     });
   };
 
@@ -28,6 +30,8 @@ export function Headline({ level = 1, className = "", children, ...props }: Head
     setMousePosition({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
+      pctX: ((e.clientX - rect.left) / rect.width) * 100,
+      pctY: ((e.clientY - rect.top) / rect.height) * 100,
     });
   };
 
@@ -53,26 +57,36 @@ export function Headline({ level = 1, className = "", children, ...props }: Head
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`font-syne relative inline-block text-glow ${sizeClasses[level]} ${className}`}
+      className={`font-syne relative inline-block cursor-default ${sizeClasses[level]} ${className}`}
       {...props}
     >
-      {/* Spotlight layer over text */}
-      <span
-        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+      <span 
+        className="relative z-10 block transition-all duration-500 ease-out"
         style={{
-          opacity: isHovered ? 1 : 0,
-          backgroundImage: `radial-gradient(140px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255,255,255,1), transparent 100%)`,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          color: "transparent",
+          color: "#FFFFFF",
+          textShadow: isHovered 
+            ? "0 0 12px rgba(255, 255, 255, 0.5), 0 0 24px rgba(255, 255, 255, 0.3)"
+            : "0 0 10px rgba(255, 255, 255, 0.4), 0 0 20px rgba(255, 255, 255, 0.2)",
         }}
-        aria-hidden="true"
       >
         {children}
       </span>
-      {/* Base text layer */}
-      <span className="relative z-[-1]">{children}</span>
+
+      {/* Dynamic Mouse Spotlight Overlay */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500 ease-out z-20 block"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          color: "transparent",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          backgroundImage: `radial-gradient(circle at ${mousePosition.pctX}% ${mousePosition.pctY}%, rgb(255,255,255) 0%, rgb(255,255,255) 10%, transparent 50%)`,
+          filter: "drop-shadow(0 0 8px rgba(255,255,255,0.3)) drop-shadow(0 0 20px rgba(255,255,255,0.15))",
+        }}
+      >
+        {children}
+      </span>
     </Tag>
   );
 }

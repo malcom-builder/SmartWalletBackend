@@ -38,7 +38,7 @@ export function Starfield() {
           y: Math.random() * canvas.height,
           size: Math.random() * 1.5 + 0.5,
           opacity: Math.random(),
-          twinkleSpeed: Math.random() * 0.05 + 0.01,
+          twinkleSpeed: Math.random() * 0.005 + 0.001,
         });
       }
     };

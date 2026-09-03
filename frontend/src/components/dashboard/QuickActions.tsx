@@ -50,9 +50,9 @@ export function QuickActions() {
           key={action.label}
           href={action.href}
           style={{ textDecoration: "none" }}
-          className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-black border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.05)] active:scale-[0.98]"
+          className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:bg-[#1a1a1a] hover:border-white/30 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.05)] active:scale-[0.98]"
         >
-          <div className="w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/30 transition-all duration-300">
+          <div className="w-10 h-10 rounded-full bg-[#111] border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#222] group-hover:border-white/30 transition-all duration-300">
             <action.icon className="w-4 h-4 text-white" />
           </div>
           <span className="font-sora font-semibold text-xs text-white/90 group-hover:text-white">{action.label}</span>
@@ -62,9 +62,9 @@ export function QuickActions() {
       <button
         onClick={handleTopUp}
         disabled={loading}
-        className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-black border border-white/10 hover:bg-white/10 hover:border-white/30 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.05)] active:scale-[0.98] disabled:opacity-50"
+        className="group relative overflow-hidden flex flex-col items-center justify-center gap-3 p-6 rounded-2xl bg-[#0a0a0a] border border-white/10 hover:bg-[#1a1a1a] hover:border-white/30 transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.05)] active:scale-[0.98] disabled:opacity-50"
       >
-        <div className="w-10 h-10 rounded-full bg-black/50 border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/10 group-hover:border-white/30 transition-all duration-300">
+        <div className="w-10 h-10 rounded-full bg-[#111] border border-white/10 flex items-center justify-center group-hover:scale-110 group-hover:bg-[#222] group-hover:border-white/30 transition-all duration-300">
           <Plus className="w-4 h-4 text-white" />
         </div>
         <span className="font-sora font-semibold text-xs text-white/90 group-hover:text-white">

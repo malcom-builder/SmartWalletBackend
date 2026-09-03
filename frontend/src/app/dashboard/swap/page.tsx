@@ -2,7 +2,7 @@ import { SwapForm } from "@/components/dashboard/SwapForm";
 
 export default function SwapPage() {
   return (
-    <div className="pt-4 pb-12 min-h-full flex items-center justify-center">
+    <div className="w-full flex justify-center pb-12">
       <SwapForm />
     </div>
   );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
+import { Button } from "@/components/ui/Button";
 
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
@@ -21,7 +22,8 @@ export function Navbar() {
     <>
       <style>{`
         .navbar {
-          position: sticky;
+          position: fixed;
+          width: 100%;
           top: 0;
           z-index: 100;
           background: transparent;
@@ -34,36 +36,6 @@ export function Navbar() {
           background: #000000;
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-        }
-        .navbar-cta {
-          position: relative;
-          z-index: 1;
-        }
-        .navbar-cta::before {
-          content: "";
-          position: absolute;
-          inset: -2px;
-          background: rgba(255, 255, 255, 0.35);
-          filter: blur(16px);
-          border-radius: 8px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          z-index: -1;
-          pointer-events: none;
-        }
-        .navbar-cta:hover::before {
-          opacity: 1 !important;
-        }
-        .navbar-cta:hover {
-          border-color: rgba(255, 255, 255, 0.6) !important;
-          background: rgba(255, 255, 255, 0.08) !important;
-          box-shadow: 0 0 16px rgba(255, 255, 255, 0.25), 0 0 32px rgba(255, 255, 255, 0.08), inset 0 0 12px rgba(255, 255, 255, 0.06) !important;
-          color: #FFFFFF !important;
-          transform: scale(1.02) !important;
-        }
-        .navbar-cta:active {
-          transform: scale(0.98) !important;
-          box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.25) !important;
         }
       `}</style>
       <header className={`navbar ${scrolled ? "scrolled" : ""} print:hidden`}>
@@ -93,30 +65,15 @@ export function Navbar() {
 
             {/* Controls */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <Link href="/auth/login" style={{ textDecoration: "none" }}>
-                <span
-                  className="navbar-cta"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "0.45rem 1.25rem",
-                    borderRadius: "8px",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    background: "transparent",
-                    fontFamily: "var(--font-sora), var(--font-body), sans-serif",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "#FFFFFF",
-                    letterSpacing: "0.01em",
-                    transition:
-                      "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, transform 0.15s ease",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  Open App
-                </span>
+              <Link href="/auth/login" style={{ textDecoration: "none" }} className="hidden sm:block">
+                <Button variant="secondary" className="px-4 py-1.5 text-xs md:text-sm">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/auth/register" style={{ textDecoration: "none" }}>
+                <Button variant="primary" className="px-4 py-1.5 text-xs md:text-sm">
+                  Create account
+                </Button>
               </Link>
             </div>
           </nav>

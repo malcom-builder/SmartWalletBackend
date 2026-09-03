@@ -56,42 +56,43 @@ export function Header() {
   }, []);
 
   const getPageTitle = () => {
-    if (pathname?.includes("/transactions")) return { title: "Transactions", sub: "View your history" };
-    if (pathname?.includes("/cards")) return { title: "Cards", sub: "Manage your payment methods" };
-    if (pathname?.includes("/settings")) return { title: "Settings", sub: "Configure your account" };
-    if (pathname?.includes("/send")) return { title: "Send Funds", sub: "Transfer to another wallet" };
-    if (pathname?.includes("/receive")) return { title: "Receive", sub: "Get paid by others" };
-    if (pathname?.includes("/swap")) return { title: "Swap", sub: "Exchange currencies" };
-    return { title: "Overview", sub: "Welcome back to your smart wallet" };
+    if (pathname?.includes("/transactions")) return "Transactions";
+    if (pathname?.includes("/cards")) return "Cards";
+    if (pathname?.includes("/settings")) return "Settings";
+    if (pathname?.includes("/send")) return "Send Funds";
+    if (pathname?.includes("/receive")) return "Receive";
+    if (pathname?.includes("/swap")) return "Swap";
+    return "Overview";
   };
 
-  const { title, sub } = getPageTitle();
+  const title = getPageTitle();
 
   return (
     <>
-      <header className="h-20 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-40 px-8 flex items-center justify-between">
-        <div>
-          <h2 className="font-syne font-bold text-xl tracking-tight text-white">{title}</h2>
-          <p className="text-medium-zinc text-xs font-sora mt-0.5">{sub}</p>
-        </div>
+      <header className="shrink-0 h-20 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-40 px-8 flex items-center justify-center">
+        <div className="w-full max-w-5xl flex items-center justify-between">
+          <div>
+            <h2 className="font-syne font-bold text-xl tracking-tight text-white">{title}</h2>
+          </div>
 
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setShowNotifications(true)}
-            className="relative p-2 rounded-full hover:bg-white/10 transition-colors text-medium-zinc hover:text-white"
-          >
-            <Bell className="w-5 h-5" />
-            {hasUnread && (
-              <span className="absolute top-1.5 right-2 w-2 h-2 bg-white rounded-full animate-pulse"></span>
-            )}
-          </button>
-          
-          <button 
-            onClick={() => router.push("/dashboard/settings")}
-            className="h-8 w-8 rounded-full bg-white/10 border border-white/20 hover:border-white/50 transition-colors overflow-hidden flex items-center justify-center cursor-pointer"
-          >
-            <span className="font-sora font-semibold text-xs text-white">{initial}</span>
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setShowNotifications(true)}
+              className="relative p-2 rounded-full hover:bg-white/10 transition-colors text-medium-zinc hover:text-white"
+            >
+              <Bell className="w-5 h-5" />
+              {hasUnread && (
+                <span className="absolute top-1.5 right-2 w-2 h-2 bg-white rounded-full animate-pulse"></span>
+              )}
+            </button>
+            
+            <button 
+              onClick={() => router.push("/dashboard/settings")}
+              className="h-8 w-8 rounded-full bg-white/10 border border-white/20 hover:border-white/50 transition-colors overflow-hidden flex items-center justify-center cursor-pointer"
+            >
+              <span className="font-sora font-semibold text-xs text-white">{initial}</span>
+            </button>
+          </div>
         </div>
       </header>
 

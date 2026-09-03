@@ -16,10 +16,10 @@ export function Sidebar() {
 
   return (
     <aside className="w-64 border-r border-white/10 bg-black h-screen sticky top-0 flex flex-col print:hidden">
-      <div className="p-6">
+      <div className="h-20 flex items-center px-6">
         <Link
-          href="/"
-          className="flex items-center hover:opacity-80 transition-opacity select-none"
+          href="/dashboard"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           style={{ textDecoration: "none" }}
         >
           <span className="font-syne font-bold text-[0.875rem] tracking-wider text-white">

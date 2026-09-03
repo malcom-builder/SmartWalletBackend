@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { getUserIdFromToken } from "@/lib/auth";
-import { ArrowLeft, CheckCircle2, Download, Upload, ArrowUpRight, ArrowDownLeft, Printer } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, Upload, ArrowUpRight, ArrowDownLeft, Printer, ArrowDownUp } from "lucide-react";
 import Link from "next/link";
 
 export default function ReceiptPage() {
@@ -16,6 +16,7 @@ export default function ReceiptPage() {
   const [error, setError] = useState("");
   const [tx, setTx] = useState<any>(null);
   const [walletId, setWalletId] = useState<string | null>(null);
+  const [swapMeta, setSwapMeta] = useState<any>(null);
 
   useEffect(() => {
     async function loadReceipt() {
@@ -23,6 +24,11 @@ export default function ReceiptPage() {
       if (!userId) return;
       
       try {
+        const cachedSwap = localStorage.getItem(`swapTx_${txId}`);
+        if (cachedSwap) {
+          setSwapMeta(JSON.parse(cachedSwap));
+        }
+
         // 1. Get user's wallet to know if they are sender or receiver
         const res = await api.get<any>(`/Wallet/by-user/${userId}`);
         const wallet = Array.isArray(res) ? res[0] : res;
@@ -69,6 +75,7 @@ export default function ReceiptPage() {
   const isIncomingTx = tx.type === "Deposit" || (tx.type === "Transfer" && tx.destinationWalletId === walletId);
 
   const getIcon = () => {
+    if (swapMeta) return <ArrowDownUp className="w-8 h-8 text-white" />;
     if (tx.type === "Deposit") return <Download className="w-8 h-8 text-white" />;
     if (tx.type === "Withdrawal") return <Upload className="w-8 h-8 text-medium-zinc" />;
     if (tx.type === "Transfer") {
@@ -79,6 +86,7 @@ export default function ReceiptPage() {
   };
 
   const getConcept = () => {
+    if (swapMeta) return "Currency Swap";
     if (tx.type === "Deposit") return "Deposit";
     if (tx.type === "Withdrawal") return "Withdrawal";
     if (tx.type === "Transfer") {
@@ -108,18 +116,38 @@ export default function ReceiptPage() {
         {/* Receipt Header */}
         <div className="flex flex-col items-center text-center mb-10">
           <div className={`w-20 h-20 rounded-full flex items-center justify-center border mb-6 ${
-            isIncomingTx ? "bg-white/10 border-white/20" : "bg-black/50 border-white/10"
+            isIncomingTx || swapMeta ? "bg-white/10 border-white/20" : "bg-black/50 border-white/10"
           }`}>
             {getIcon()}
           </div>
           <h2 className="font-syne font-bold text-2xl text-white mb-2">{getConcept()}</h2>
           <p className="font-mono text-xs text-medium-zinc uppercase tracking-widest">{tx.status}</p>
           
-          <div className="mt-6">
-            <span className={`font-syne font-bold text-5xl ${isIncomingTx ? "text-white" : "text-medium-zinc"}`}>
-              {isIncomingTx ? "+" : "-"}${tx.amount.toFixed(2)}
-            </span>
-            <span className="font-sora font-semibold text-lg text-white/50 ml-2">{tx.currencyCode}</span>
+          <div className="mt-6 flex items-center justify-center gap-4">
+            {swapMeta ? (
+              <>
+                <div>
+                  <span className="font-syne font-bold text-3xl text-medium-zinc line-through decoration-1">
+                    ${swapMeta.fromAmount.toFixed(2)}
+                  </span>
+                  <span className="font-sora font-semibold text-sm text-medium-zinc ml-1">{swapMeta.fromCurrency}</span>
+                </div>
+                <ArrowLeft className="w-5 h-5 text-white rotate-180" />
+                <div>
+                  <span className="font-syne font-bold text-4xl text-white">
+                    ${swapMeta.toAmount.toFixed(2)}
+                  </span>
+                  <span className="font-sora font-semibold text-sm text-white/50 ml-1">{swapMeta.toCurrency}</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className={`font-syne font-bold text-5xl ${isIncomingTx ? "text-white" : "text-medium-zinc"}`}>
+                  {isIncomingTx ? "+" : "-"}${tx.amount.toFixed(2)}
+                </span>
+                <span className="font-sora font-semibold text-lg text-white/50 ml-2">{tx.currencyCode}</span>
+              </>
+            )}
           </div>
         </div>
         
@@ -128,6 +156,13 @@ export default function ReceiptPage() {
         
         {/* Receipt Details */}
         <div className="space-y-6">
+          {swapMeta && (
+            <div>
+              <p className="font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1">Exchange Rate</p>
+              <p className="font-mono text-sm text-white">1 USD = {swapMeta.exchangeRate.toFixed(2)} ARS</p>
+            </div>
+          )}
+
           <div>
             <p className="font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1">Transaction ID</p>
             <p className="font-mono text-sm text-white break-all">{tx.id}</p>

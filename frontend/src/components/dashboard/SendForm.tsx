@@ -112,20 +112,20 @@ export function SendForm() {
         Back to Dashboard
       </Link>
       
-      <div className="bg-black border border-white/10 rounded-2xl p-6 sm:p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)]">
-        <h2 className="font-syne font-bold text-2xl text-white mb-6">Send Funds</h2>
+      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 sm:p-6 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)]">
+        <h2 className="font-syne font-bold text-xl text-white mb-4">Send Funds</h2>
         
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-sora text-xs">
+          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-sora text-xs">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Asset Selection */}
           <div>
-            <label className="block font-sora text-xs font-semibold text-medium-zinc uppercase tracking-wider mb-2">Currency</label>
-            <div className="flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:border-white/20 transition-colors">
+            <label className="block font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1.5">Currency</label>
+            <div className="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:border-white/20 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                   <Wallet className="w-4 h-4 text-white" />
@@ -143,22 +143,22 @@ export function SendForm() {
 
           {/* Recipient */}
           <div>
-            <label className="block font-sora text-xs font-semibold text-medium-zinc uppercase tracking-wider mb-2">Recipient</label>
+            <label className="block font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1.5">Recipient</label>
             <input 
               type="text" 
               required
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
               placeholder="Alias (e.g. malcom.wallet)"
-              className="w-full bg-transparent border border-white/10 border-b-white/20 rounded-xl px-4 py-4 text-white font-mono text-sm focus:outline-none focus:border-white/40 transition-colors placeholder:text-white/20"
+              className="w-full bg-transparent border border-white/10 border-b-white/20 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-white/40 transition-colors placeholder:text-white/20"
             />
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block font-sora text-xs font-semibold text-medium-zinc uppercase tracking-wider mb-2">Amount</label>
+            <label className="block font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1.5">Amount</label>
             <div className="relative">
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 font-syne font-bold text-4xl text-white/50">$</span>
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 font-syne font-bold text-3xl text-white/50">$</span>
               <input 
                 type="number" 
                 required
@@ -167,13 +167,13 @@ export function SendForm() {
                 placeholder="0.00"
                 step="0.01"
                 min="0.01"
-                className="w-full bg-transparent border-none px-8 py-4 font-syne font-bold text-5xl text-white focus:outline-none placeholder:text-white/20"
+                className="w-full bg-transparent border-none px-6 py-2 font-syne font-bold text-4xl text-white focus:outline-none placeholder:text-white/20"
               />
             </div>
           </div>
 
           {/* Network Fee */}
-          <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+          <div className="pt-3 border-t border-white/5 flex items-center justify-between">
             <span className="font-sora text-xs text-medium-zinc">Network Fee (Est.)</span>
             <span className="font-mono text-xs text-white">~$0.45</span>
           </div>
@@ -182,7 +182,7 @@ export function SendForm() {
           <button
             type="submit"
             disabled={status === "loading" || !amount || !recipient}
-            className="w-full relative overflow-hidden inline-flex items-center justify-center rounded-xl bg-white text-black px-6 py-4 transition-all duration-300 font-sora font-bold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+            className="w-full relative overflow-hidden inline-flex items-center justify-center rounded-xl bg-white text-black px-6 py-3.5 transition-all duration-300 font-sora font-bold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {status === "loading" ? (
               <Loader2 className="w-5 h-5 animate-spin" />

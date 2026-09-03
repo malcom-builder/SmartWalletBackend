@@ -63,7 +63,7 @@ export function BalanceCard() {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative overflow-hidden rounded-2xl bg-black border border-white/10 p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-300 hover:border-white/30 hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_32px_rgba(255,255,255,0.04),inset_0_1px_0_rgba(255,255,255,0.1)]"
+      className="relative w-full h-full flex flex-col justify-center overflow-hidden rounded-2xl bg-[#0a0a0a] border border-white/10 p-8 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] transition-all duration-300 hover:border-white/30 hover:shadow-[0_24px_48px_rgba(0,0,0,0.5),0_0_32px_rgba(255,255,255,0.04),inset_0_1px_0_rgba(255,255,255,0.1)]"
     >
       {/* Spotlight overlay */}
       <div

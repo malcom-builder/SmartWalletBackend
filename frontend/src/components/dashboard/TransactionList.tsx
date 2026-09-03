@@ -26,7 +26,18 @@ export function TransactionList() {
         if (wallet && wallet.id) {
           setWalletId(wallet.id);
           const txs = await api.get<any[]>(`/Transactions/wallet/${wallet.id}`);
-          setTransactions(txs || []);
+          
+          const enrichedTxs = (txs || []).map(tx => {
+            try {
+              const swapMeta = localStorage.getItem(`swapTx_${tx.id}`);
+              if (swapMeta) {
+                return { ...tx, _isSwap: true, _swapMeta: JSON.parse(swapMeta) };
+              }
+            } catch(e) {}
+            return tx;
+          });
+          
+          setTransactions(enrichedTxs);
         }
       } catch (err) {
         console.error(err);
@@ -48,6 +59,7 @@ export function TransactionList() {
   const recentTxs = sortedTxs.slice(0, 5);
 
   const getIcon = (tx: any) => {
+    if (tx._isSwap) return <ArrowLeftRight className="w-4 h-4 text-white" />;
     if (tx.type === "Deposit") return <Download className="w-4 h-4 text-white" />;
     if (tx.type === "Withdrawal") return <Upload className="w-4 h-4 text-medium-zinc" />;
     if (tx.type === "Transfer") {
@@ -58,6 +70,9 @@ export function TransactionList() {
   };
 
   const getConcept = (tx: any) => {
+    if (tx._isSwap) {
+      return tx._swapMeta.isBuyUsd ? "Buy Crypto (USDC)" : "Sell Crypto (USDC)";
+    }
     if (tx.type === "Deposit") return "Deposit";
     if (tx.type === "Withdrawal") return "Withdrawal";
     if (tx.type === "Transfer") {
@@ -68,6 +83,7 @@ export function TransactionList() {
   };
 
   const getAmountColor = (tx: any) => {
+    if (tx._isSwap) return "text-white";
     if (tx.type === "Deposit" || (tx.type === "Transfer" && tx.destinationWalletId === walletId)) {
       return "text-white";
     }
@@ -75,12 +91,19 @@ export function TransactionList() {
   };
 
   const formatAmount = (tx: any) => {
+    if (tx._isSwap) {
+      const fromAmount = tx._swapMeta.fromAmount.toFixed(2);
+      const toAmount = tx._swapMeta.toAmount.toFixed(2);
+      const fromCurr = tx._swapMeta.isBuyUsd ? "ARS" : "USDC";
+      const toCurr = tx._swapMeta.isBuyUsd ? "USDC" : "ARS";
+      return `${toAmount} ${toCurr}`;
+    }
     const isIncoming = tx.type === "Deposit" || (tx.type === "Transfer" && tx.destinationWalletId === walletId);
     return `${isIncoming ? "+" : "-"}$${tx.amount.toFixed(2)}`;
   };
 
   return (
-    <div className="rounded-2xl bg-black border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden">
+    <div className="rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] overflow-hidden">
       <div className="p-6 border-b border-white/10 flex items-center justify-between">
         <h3 className="font-syne font-bold text-lg text-white">Recent Transactions</h3>
         <button className="text-xs font-mono font-semibold text-medium-zinc hover:text-white transition-colors">
@@ -98,7 +121,7 @@ export function TransactionList() {
             <div 
               key={tx.id} 
               onClick={() => router.push(`/dashboard/transactions/${tx.id}`)}
-              className={`p-6 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer ${
+              className={`p-6 flex items-center justify-between hover:bg-[#1a1a1a] transition-colors cursor-pointer ${
                 i !== recentTxs.length - 1 ? "border-b border-white/5" : ""
               }`}
             >

@@ -15,13 +15,13 @@ export function Footer() {
             className="group inline-flex items-center tracking-tight select-none cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
             style={{ textDecoration: "none", fontSize: "1.125rem" }}
           >
-            <span className="font-sora font-bold text-white transition-colors duration-500 ease-in-out group-hover:text-zinc-400">
+            <span className="font-sora font-medium text-white transition-colors duration-500 ease-in-out group-hover:text-zinc-400">
               malcom
             </span>
-            <span className="font-mono font-semibold text-white/90 transition-colors duration-500 ease-in-out group-hover:text-zinc-500">
+            <span className="font-mono font-medium text-white/90 transition-colors duration-500 ease-in-out group-hover:text-zinc-500">
               .
             </span>
-            <span className="font-sora font-bold text-white transition-colors duration-500 ease-in-out group-hover:text-white">
+            <span className="font-sora font-medium text-white transition-colors duration-500 ease-in-out group-hover:text-white">
               builder
             </span>
           </Link>
