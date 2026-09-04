@@ -1,0 +1,12 @@
+.dockerignore
+.env
+.git
+.gitignore
+.vs
+.vscode
+.github
+*.md
+docs/
+bin/
+obj/
+out/

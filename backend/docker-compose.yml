@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  smartwallet-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - JWT_SECRET=VerySecretLongStringHereMakeItAtLeast32Bytes!
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SmartWallet;User=sa;Password=Your_password123;TrustServerCertificate=True;MultipleActiveResultSets=true;
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Your_password123
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa", "-P", "Your_password123", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: smartwallet_tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
+    depends_on:
+      smartwallet-api:
+        condition: service_started

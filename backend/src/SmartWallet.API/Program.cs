@@ -2,6 +2,7 @@ using SmartWallet.Infrastructure.Extensions;
 using Scalar.AspNetCore; // Asegurate de tener el using
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,23 @@ builder.Services.AddValidatorsFromAssemblyContaining<SmartWallet.Application.Val
 
 // --- CQRS / MediatR ---
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(SmartWallet.Application.Users.GetAllUsersQuery).Assembly));
+
+// --- CORS ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                  "http://localhost:3000",
+                  "https://*.vercel.app",
+                  "https://smartwallet.malcombuilder.com",
+                  "http://smartwallet.malcombuilder.com"
+              )
+              .SetIsOriginAllowedToAllowWildcardSubdomains()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -60,9 +78,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler(); // <-- Manejo global de excepciones
+app.UseCors("AllowFrontend"); // <-- Aplicar CORS
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// --- aplicar migraciones automáticamente ---
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<SmartWallet.Infrastructure.SmartWalletDbContext>();
+    dbContext.Database.Migrate();
+}
+
 app.Run();
