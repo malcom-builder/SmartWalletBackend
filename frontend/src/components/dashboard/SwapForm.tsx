@@ -165,31 +165,51 @@ export function SwapForm() {
   const fromBalance = isBuyUsd ? wallet?.balance || 0 : 50.00;
 
   return (
-    <div className="w-full max-w-lg mx-auto animate-fade-up">
+    <div className="w-full max-w-md mx-auto animate-fade-up">
       <Link href="/dashboard" className="inline-flex items-center gap-2 text-medium-zinc hover:text-white font-sora text-sm font-semibold mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </Link>
       
-      <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 sm:p-6 shadow-[0_20px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)]">
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="font-syne font-bold text-xl text-white">Swap Assets</h2>
+      <div className="bg-[#09090b] border border-white/10 rounded-3xl p-6 sm:p-7 shadow-[0_30px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.05)] relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="flex justify-between items-center mb-6 relative z-10">
+          <h2 className="font-syne font-bold text-2xl text-white">Swap</h2>
           {rates && (
-            <div className="text-right">
-              <p className="font-mono text-[10px] text-medium-zinc uppercase tracking-wider">Live Rate</p>
-              <p className="font-sora text-[10px] text-white font-semibold flex items-center gap-1">
+            <div className="text-right flex flex-col items-end">
+              <p className="font-mono text-[10px] text-medium-zinc uppercase tracking-wider mb-1">Live Rate</p>
+              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-2 py-1 rounded-md">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                1 USD = ${exchangeRate?.toFixed(2)}
-              </p>
+                <p className="font-sora text-[11px] text-white font-semibold">
+                  1 USD = ${exchangeRate?.toFixed(2)}
+                </p>
+              </div>
             </div>
           )}
         </div>
         
-        <form onSubmit={handleSwap} className="space-y-1">
-          {/* Pay */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-3 transition-colors focus-within:border-white/30">
-            <label className="block font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1.5">You Pay</label>
-            <div className="flex items-center justify-between">
+        <form onSubmit={handleSwap} className="space-y-2 relative z-10">
+          {/* Pay Block */}
+          <div className="bg-[#121214] border border-white/5 hover:border-white/10 rounded-2xl p-4 transition-all focus-within:bg-[#18181b] focus-within:border-white/20">
+            <div className="flex justify-between items-center mb-2">
+              <label className="font-sora text-xs font-semibold text-medium-zinc">You Pay</label>
+              <div className="flex items-center gap-2">
+                <p className="font-mono text-[10px] text-medium-zinc">
+                  Balance: ${fromBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </p>
+                <button 
+                  type="button" 
+                  onClick={() => handleFromChange({ target: { value: fromBalance.toString() } } as any)}
+                  className="font-sora text-[9px] font-bold text-black bg-white/80 hover:bg-white px-1.5 py-0.5 rounded transition-colors uppercase"
+                >
+                  Max
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between gap-4">
               <input 
                 type="number"
                 required
@@ -198,41 +218,45 @@ export function SwapForm() {
                 placeholder="0.00"
                 max={fromBalance}
                 step="any"
-                className="w-2/3 bg-transparent border-none font-syne font-bold text-2xl text-white focus:outline-none placeholder:text-white/20"
+                className="w-full bg-transparent border-none font-syne font-bold text-3xl sm:text-4xl text-white focus:outline-none placeholder:text-white/20"
               />
-              <div className="bg-black border border-white/10 rounded-lg px-2 py-1 font-sora font-semibold text-xs text-white flex items-center gap-1.5">
-                <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${fromCurrency === 'USD' ? 'bg-green-500 text-black' : 'bg-blue-400 text-black'}`}>
+              <div className="shrink-0 bg-[#27272a] border border-white/10 hover:bg-[#3f3f46] transition-colors rounded-full px-3 py-1.5 font-sora font-semibold text-sm text-white flex items-center gap-2 cursor-pointer shadow-sm">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-inner ${fromCurrency === 'USD' ? 'bg-green-500 text-black' : 'bg-blue-400 text-black'}`}>
                   {fromCurrency === 'USD' ? '$' : 'Ar$'}
                 </div>
                 {fromCurrency}
               </div>
             </div>
-            <p className="font-mono text-[9px] text-medium-zinc mt-1.5 cursor-pointer hover:text-white transition-colors" onClick={() => setFromAmount(fromBalance.toString())}>
-              Balance: ${fromBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {fromCurrency}
-            </p>
           </div>
 
-          {/* Separator / Swap Icon */}
-          <div className="flex justify-center -my-3 relative z-10">
-            <button type="button" onClick={handleToggleDirection} className="bg-black border border-white/10 p-1.5 rounded-full cursor-pointer hover:border-white/30 hover:bg-white/5 transition-all">
-              <ArrowDownUp className="w-3.5 h-3.5 text-white" />
+          {/* Swap Icon Button */}
+          <div className="flex justify-center -my-4 relative z-20">
+            <button 
+              type="button" 
+              onClick={handleToggleDirection} 
+              className="bg-[#18181b] border-4 border-[#09090b] p-2 rounded-xl cursor-pointer hover:bg-[#27272a] transition-all group shadow-md"
+            >
+              <ArrowDownUp className="w-5 h-5 text-white group-hover:rotate-180 transition-transform duration-500" />
             </button>
           </div>
 
-          {/* Receive */}
-          <div className="bg-white/5 border border-white/10 rounded-xl p-3 transition-colors">
-            <label className="block font-sora text-[10px] font-semibold text-medium-zinc uppercase tracking-wider mb-1.5">You Receive</label>
-            <div className="flex items-center justify-between">
+          {/* Receive Block */}
+          <div className="bg-[#121214] border border-white/5 rounded-2xl p-4 transition-all">
+            <div className="flex justify-between items-center mb-2">
+              <label className="font-sora text-xs font-semibold text-medium-zinc">You Receive</label>
+            </div>
+            
+            <div className="flex items-center justify-between gap-4">
               <input 
                 type="number"
                 value={toAmount}
                 onChange={handleToChange}
                 step="any"
                 placeholder="0.00"
-                className="w-2/3 bg-transparent border-none font-syne font-bold text-2xl text-medium-zinc focus:outline-none placeholder:text-white/20"
+                className="w-full bg-transparent border-none font-syne font-bold text-3xl sm:text-4xl text-white focus:outline-none placeholder:text-white/20"
               />
-              <div className="bg-black border border-white/10 rounded-lg px-2 py-1 font-sora font-semibold text-xs text-white flex items-center gap-1.5">
-                <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-bold ${toCurrency === 'USD' ? 'bg-green-500 text-black' : 'bg-blue-400 text-black'}`}>
+              <div className="shrink-0 bg-[#27272a] border border-white/10 hover:bg-[#3f3f46] transition-colors rounded-full px-3 py-1.5 font-sora font-semibold text-sm text-white flex items-center gap-2 cursor-pointer shadow-sm">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shadow-inner ${toCurrency === 'USD' ? 'bg-green-500 text-black' : 'bg-blue-400 text-black'}`}>
                   {toCurrency === 'USD' ? '$' : 'Ar$'}
                 </div>
                 {toCurrency}
@@ -241,10 +265,10 @@ export function SwapForm() {
           </div>
 
           {/* Details */}
-          <div className="py-2 space-y-1">
-            <div className="flex justify-between font-mono text-[10px] text-medium-zinc">
+          <div className="pt-4 pb-2 px-1 space-y-2">
+            <div className="flex justify-between items-center font-sora text-[11px] text-medium-zinc">
               <span>Network Fee</span>
-              <span className="text-white">~$0.00</span>
+              <span className="text-white font-medium bg-white/10 px-1.5 py-0.5 rounded">Free</span>
             </div>
           </div>
 
@@ -252,10 +276,12 @@ export function SwapForm() {
           <button
             type="submit"
             disabled={status === "loading" || !fromAmount || !exchangeRate || Number(fromAmount) > fromBalance}
-            className="w-full relative overflow-hidden inline-flex items-center justify-center rounded-xl bg-white text-black px-6 py-3.5 transition-all duration-300 font-sora font-bold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+            className="w-full relative overflow-hidden inline-flex items-center justify-center rounded-2xl bg-white text-black px-6 py-4 transition-all duration-300 font-sora font-bold text-base hover:opacity-90 disabled:opacity-50 disabled:bg-medium-zinc disabled:text-white/50 disabled:cursor-not-allowed mt-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
             {status === "loading" ? (
               <Loader2 className="w-5 h-5 animate-spin" />
+            ) : !fromAmount ? (
+              "Enter an amount"
             ) : Number(fromAmount) > fromBalance ? (
               "Insufficient Balance"
             ) : (
