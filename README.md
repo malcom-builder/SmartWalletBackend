@@ -8,6 +8,23 @@
 **SmartWallet** is a high-performance digital wallet management platform designed with **Clean Architecture** and **SOLID** principles. It features a robust financial auditing system (Ledger), bank-grade security protocols, and a containerized deployment strategy for Azure.
 
 > **Key Differentiator:** Unlike standard wallet apps, SmartWallet implements a double-entry **Transaction Ledger** to ensure 100% traceability and auditability of financial movements.
+> 
+## 📸 Application Previews
+
+*A modern, Web3-inspired dark mode UI built with Next.js and TailwindCSS.*
+
+<p align="center">
+  <img src="./assets/images/mockup/compressed/hero.webp" width="48%" alt="Hero Section" />
+  <img src="./assets/images/mockup/compressed/dashboard.webp" width="48%" alt="Dashboard" />
+</p>
+<p align="center">
+  <img src="./assets/images/mockup/compressed/swap.webp" width="48%" alt="Swap Modal" />
+  <img src="./assets/images/mockup/compressed/virtual-card.webp" width="48%" alt="Virtual Card" />
+</p>
+<p align="center">
+  <img src="./assets/images/mockup/compressed/transactions.webp" width="48%" alt="Transactions" />
+  <img src="./assets/images/mockup/compressed/swap-receipt.webp" width="48%" alt="Transaction Receipt" />
+</p>
 
 ---
 
