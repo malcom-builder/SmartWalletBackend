@@ -43,6 +43,12 @@
 - No se ha implementado FluentValidation ni validaciones complejas fuera de los DataAnnotations del modelo.
 
 ## 05 — Log de Intervenciones (LIFO)
+- **Septiembre 2026:** Preparación para despliegue y exhibición en portafolio (Backend & Frontend).
+  - Configuración completa de contenedorización del backend (.NET 8) con Docker multi-stage build y `docker-compose.yml` local.
+  - Integración nativa de **Cloudflare Tunnels (`cloudflared`)** dentro de Docker Compose para exponer el backend local (SQL Server + API) de forma segura hacia Vercel.
+  - Automatización de migraciones de Entity Framework Core al inicio de la aplicación en `Program.cs`.
+  - Rediseño de UI/UX del Modal de **Swap** en frontend (Next.js) con estilo "Web3-inspired" moderno.
+  - Generación de mockups estilo Safari integrados al `README.md` del repositorio.
 - **Septiembre 2026:** Rediseño integral del frontend (Dashboard y Modales).
   - Implementación de la estética monocromática minimalista (Deep Obsidian & Pure White) en toda la UI del Dashboard.
   - Refactorización de layout, corrigiendo alineaciones de flexbox (evitando encogimiento del Header con `shrink-0`) y estabilizando el canvas de fondo mediante tarjetas opacas `#0a0a0a`.
