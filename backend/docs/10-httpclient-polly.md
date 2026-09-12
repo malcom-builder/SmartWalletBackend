@@ -1,84 +1,27 @@
-# Documentación: HttpClient + Polly (DolarApi)
+ï»¿# ADR 010: External API Integrations & Resilience Patterns
 
-Última actualización: 2025-10-24
+**Status:** Accepted  
+**Type:** Architecture Decision Record
 
-Resumen
-- Explica cómo se registra y configura el `HttpClient` para `DolarApi` y las políticas de resiliencia aplicadas mediante `Polly`.
-- Describe los tipos y archivos relevantes en el proyecto `SmartWallet`.
+## Context
+SmartWallet relies on external providers, such as the DolarApi, to fetch real-time currency exchange rates. External networks are inherently unreliable. Without fault tolerance, a timeout from the DolarApi would cause our internal threads to block, potentially leading to Thread Pool Starvation and cascading system failures.
 
-Arquitectura y archivos relevantes
-- `src\SmartWallet.Infrastructure\Extensions\ServiceCollectionExtension.cs`
-  - Método: `AddDolarApi(IServiceCollection, IConfiguration)` — registra `IDolarApiService` y configura `HttpClient`.
-- `src\SmartWallet.Infrastructure\ExternalServices\DolarApiService.cs`
-  - Implementación de `IDolarApiService` que usa el `HttpClient` inyectado.
-- `src\SmartWallet.Application\Abstractions\IDolarApiService.cs`
-  - Interfaz pública del servicio.
-- `src\SmartWallet.Infrastructure\ExternalServices\Polly\PollyResiliencePolicies.cs`
-  - Contiene métodos `GetRetryPolicy` y `GetCircuitBreakerPolicy`.
-- `src\SmartWallet.Infrastructure\ExternalServices\Polly\ApiClientConfiguration.cs`
-  - Modelo que define los parámetros de configuración de las políticas (retry, circuit breaker).
-- `src\Contracts\Responses\DolarDto.cs`
-  - DTO de respuesta utilizado por `DolarApiService`.
+## Decision
+We integrated **Polly**, a .NET resilience and transient-fault-handling library, directly into our HttpClient factory registrations.
 
-Configuración (appsettings.json)
-- Añade o verifica la sección `DolarApi` en `src\SmartWallet.API\appsettings.json`. Ejemplo mínimo:
+## Implementation Details
+### 1. Exponential Backoff Retry Policy
+- **Logic:** If an external request fails due to a transient error (e.g., HTTP 500, Timeout), Polly will automatically retry the request up to 3 times.
+- **Backoff:** The wait time between retries grows exponentially (e.g., 2s, 4s, 8s). This prevents our system from hammering an already struggling external server.
 
-- Campos importantes:
-  - `BaseUrl` (string) — URL base del API. Obligatorio; `AddDolarApi` lanza `InvalidOperationException` si está vacío.
-  - `TimeoutSeconds` (opcional) — tiempo de espera que puede usar `DolarApiService`.
-  - `Polly.*` — parámetros que controlan `RetryPolicy` y `CircuitBreaker`.
+### 2. Circuit Breaker Policy
+- **Logic:** If the external API fails consecutively beyond a threshold (e.g., 5 times), the Circuit Breaker "Trips" (opens).
+- **Behavior:** While open, all subsequent requests to that API fail immediately without attempting a network call. This saves internal resources and allows the external system time to recover.
+- **Recovery:** After a set duration (e.g., 30 seconds), the circuit allows a "half-open" test request. If successful, the circuit closes, and normal operations resume.
 
-Registro de servicios
-- `AddDolarApi` hace lo siguiente:
-  1. `services.Configure<DolarApiOptions>(configuration.GetSection("DolarApi"))`
-  2. `services.Configure<ApiClientConfiguration>(configuration.GetSection("DolarApi:Polly"))`
-  3. `services.AddHttpClient<IDolarApiService, DolarApiService>((sp, client) => { ... })`
-     - Valida `DolarApiOptions.BaseUrl` y asigna `client.BaseAddress`.
-  4. Aplica políticas con `.AddPolicyHandler(...)` usando `PollyResiliencePolicies.GetRetryPolicy(cfg)` y `GetCircuitBreakerPolicy(cfg)`.
+### 3. Configuration via \IOptions\
+- All Polly parameters (RetryCount, CircuitBreakerDurationSeconds) are bound strongly-typed via ppsettings.json, allowing DevOps to tweak resiliency thresholds without recompiling the application.
 
-Políticas de resiliencia (resumen)
-- Retry Policy
-  - Basada en el valor `RetryCount`.
-  - Implementa backoff exponencial (configurable con `RetryInitialBackoffMs` y `RetryMaxBackoffMs`).
-  - Reintenta en errores transitorios típicos (5xx, timeouts, etc.). Ver `PollyResiliencePolicies` para detalles de excepciones y comportamiento exacto.
-- Circuit Breaker
-  - Se abre cuando el número de fallos supera `CircuitBreakerFailureThreshold`.
-  - Permanencia en abierto por `CircuitBreakerDurationSeconds`.
-  - Evita llamar repetidamente al API cuando está inestable.
-
-Buenas prácticas y recomendaciones
-- Producción:
-  - Ajusta `RetryCount` y tiempos de backoff para evitar sobrecarga del endpoint.
-  - Configura `CircuitBreakerFailureThreshold` y `CircuitBreakerDurationSeconds` basados en SLAs del proveedor externo.
-  - Habilita logging estructurado para las políticas (ej., eventos de circuito abierto/close/retry).
-- Telemetría:
-  - Instrumenta reintentos y eventos de circuito con Application Insights, Prometheus o similar para alertas.
-- Tests:
-  - Crear pruebas de integración que simulen fallos (timeouts, 5xx) para validar que las políticas se disparan.
-  - Considerar usar `Microsoft.Extensions.Http.Testing` o `WireMock.Net` para simular respuestas del API.
-- Timeouts:
-  - Además del retry/circuit, definir `TimeoutPolicy` o `HttpClient.Timeout` si es necesario para cortar llamadas largas.
-- Idempotencia:
-  - Asegurarse de que las operaciones reintentadas sean idempotentes o que el retry sea seguro para el endpoint.
-
-Cómo utilizar `IDolarApiService`
-- Inyectar en controladores o servicios:
-
-Debug y diagnóstico
-- Logs:
-  - Añadir logs en `DolarApiService` alrededor de llamadas externas.
-  - Registrar eventos de `PollyResiliencePolicies` (retries, circuit open/close).
-- Ver la salida de `HttpClient` y `Polly` usando niveles de `Debug`/`Trace` para identificar patrones.
-- Revisar el Output en Visual Studio: pestaña `Output` y seleccionar las fuentes correspondientes en __Output Window__.
-
-Instrucciones para la solución y control de versiones
-- Incluir `docs/httpclient-polly.md` y `docs/changelog.md` como Solution Items:
-  - En __Solution Explorer__ -> botón derecho sobre la solución -> __Add__ > __Existing Item__ -> seleccionar archivos dentro de `docs/`.
-- Commit sugerido:
-  - `docs: add httpclient + polly documentation for DolarApi`
-- Branch sugerido:
-  - `docs/httpclient-polly` o según las convenciones: `docs/*`.
-
-Notas finales
-- Si se cambian los nombres de opciones o las estructuras de `ApiClientConfiguration` y `DolarApiOptions`, actualizar `AddDolarApi` y la documentación.
-- Para optimizaciones avanzadas (benchmarks, perfiles de latencia) sigue la guía de performance y crea pruebas controladas. (Si deseas, puedo preparar un perfil/baseline).
+## Consequences
+- **Positive:** Massive improvement in system stability. The backend will never crash due to a third-party outage.
+- **Negative:** Requires careful tuning of timeout thresholds to avoid false positives.

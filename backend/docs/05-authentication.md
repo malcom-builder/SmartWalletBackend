@@ -1,72 +1,26 @@
-﻿# Autenticación y autorización con JWT
+﻿# ADR 005: JWT Authentication & Identity Management
 
-## Objetivo
-Implementar registro y autenticación de usuarios mediante JWT.  
-Permitir que usuarios se registren, inicien sesión y obtengan sus datos autenticados desde un endpoint protegido.
+**Status:** Accepted  
+**Type:** Architecture Decision Record
 
----
+## Context
+SmartWallet requires a stateless, scalable, and secure authentication mechanism to manage user sessions and authorize financial operations. Traditional session-based authentication is not suitable for a containerized, RESTful API environment.
 
-## Pasos de implementación
-1. **Cambios clave en código**
-   - `AuthController`: agrega endpoints de registro (`/register`) y login (`/login`).
-   - `AuthenticationService`: valida credenciales y emite tokens JWT con claims (`sub`, `email`, `name`, `role`).
-   - `Program.cs`: configuración de `AddAuthentication` con `JwtBearer`, `AddAuthorization` y Swagger con esquema Bearer.
-   - `UserController`: incorpora `/users/me` para devolver datos del usuario autenticado (requiere JWT).
-   - Se agregaron `[Authorize]` y restricciones por rol en controllers sensibles (`Transactions`, `TransactionLedgers`, `User`).
+## Decision
+We implemented **JSON Web Tokens (JWT)** as the primary authentication mechanism, coupled with **Role-Based Access Control (RBAC)**.
 
-2. **Archivos o carpetas creadas/modificadas**
-   - `Contracts/Requests/LoginRequest.cs`
-   - `Contracts/Requests/UserCreateRequest.cs`
-   - `Application/Abstractions/IAuthenticationService.cs`
-   - `Infrastructure/ExternalServices/AuthenticationService.cs`
-   - `Infrastructure/Persistence/Repositories/UserRepository.cs`
-   - `API/Controllers/AuthController.cs`
-   - `API/Controllers/UserController.cs`
-   - `Program.cs`
+## Implementation Details
+1. **Token Generation (\AuthenticationService\):**
+   - Emits signed JWTs using a strong symmetric key (managed via Azure Key Vault in production).
+   - Injects custom claims (sub, email, 
+ame, ole) to prevent database hits for basic user identity checks during requests.
+2. **Security Enhancements:**
+   - Passwords are securely hashed before database insertion.
+   - Tokens have a short expiration window to minimize the impact of token theft.
+3. **Authorization:**
+   - Applied [Authorize] attributes globally where required.
+   - Defined custom policies (e.g., AdminOnly, SameUserOrAdmin) to strictly control access to sensitive endpoints (like viewing another user's ledger).
 
-3. **Dependencias o paquetes añadidos**
-   - `Microsoft.AspNetCore.Authentication.JwtBearer`
-   - `System.IdentityModel.Tokens.Jwt`
-   - `Microsoft.IdentityModel.Tokens`
-
----
-
-## Endpoints
-| Método | Ruta                | Descripción                       | Autenticación |
-|--------|---------------------|-----------------------------------|---------------|
-| POST   | /api/auth/register  | Registro de un nuevo usuario      | ❌ |
-| POST   | /api/auth/login     | Login y emisión de token JWT      | ❌ |
-| GET    | /api/users/me       | Datos del usuario autenticado     | ✅ |
-
----
-
-## Cambios en base de datos
-- **Migración creada:** `202510182100_add_auth_tables`
-- **Tablas nuevas o modificadas:**
-  - `Users`  
-    - `Id` (PK, Guid)  
-    - `Name` (string)  
-    - `Email` (string, único)  
-    - `PasswordHash` (string)  
-    - `Role` (enum/string)  
-    - `Active` (bool)  
-    - `CreatedAt`, `UpdatedAt` (DateTime)  
-  - `Roles` (opcional, si se maneja como tabla separada)
-
----
-
-## Ejemplos de uso
-```bash
-# Registro
-curl -X POST https://localhost:5001/api/auth/register \
--H "Content-Type: application/json" \
--d '{"name":"demo","email":"demo@demo.com","password":"1234","role":"User"}'
-
-# Login
-curl -X POST https://localhost:5001/api/auth/login \
--H "Content-Type: application/json" \
--d '{"email":"demo@demo.com","password":"1234"}'
-
-# Usar el token recibido para acceder a /users/me
-curl -X GET https://localhost:5001/api/users/me \
--H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+## Consequences
+- **Positive:** Fully stateless authentication allows the backend to scale horizontally without sticky sessions.
+- **Negative:** Token revocation (logout) is complex in stateless JWT. A token blocklist (Redis) must be implemented in future iterations to handle manual logouts.
