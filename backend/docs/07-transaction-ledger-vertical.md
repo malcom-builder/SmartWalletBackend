@@ -1,49 +1,37 @@
-﻿# Implementación vertical de Transaction + TransactionLedger
+﻿# ADR 007: Implementation of Double-Entry Ledger for Transaction Integrity
 
-## Objetivo
-Completar la vertical de transacciones financieras en SmartWallet, implementando los DTOs, servicios de aplicación, controladores y endpoints para operar sobre las entidades `Transaction` y `TransactionLedger`.  
-Las entidades ya estaban definidas previamente en la capa Domain.
+**Status:** Accepted  
+**Date:** 2025-12-03 (Updated)  
+**Context:**  
+Standard CRUD operations for digital wallets typically involve directly updating a Balance field. However, this approach is highly susceptible to race conditions, lacks historical auditability, and fails to meet financial compliance standards. If a system crashes mid-transfer, funds can be permanently lost or duplicated.
 
----
+**Decision:**  
+We decided to implement a **Double-Entry Transaction Ledger** combined with the **Unit of Work** pattern.
 
-## Pasos de implementación
-1. Se implementaron los DTOs: `DepositRequest`, `WithdrawRequest`, `TransferRequest`.
-2. Se creó el servicio `TransactionService` con métodos `DepositAsync`, `WithdrawAsync`, `TransferAsync`.
-3. Se definió la interfaz `ITransactionService` y se registró en `Program.cs`.
-4. Se implementaron los repositorios `TransactionRepository` y `TransactionLedgerRepository`.
-5. Se registraron ambos repositorios en el contenedor de dependencias.
-6. Se definieron los endpoints en `TransactionsController`.
-7. Se agregaron endpoints de lectura para `Transaction` y `TransactionLedger`.
-8. Se testearon los endpoints vía Postman con valores válidos (`CurrencyCode = 32`).
-9. Se resolvieron errores 405 y 400 relacionados con registro de servicios y validación de enums.
-10. Se documentó la verticalidad completa para onboarding y mantenimiento.
+## Architecture & Implementation
 
----
+### 1. The Domain Entities
+- **\Transaction\**: Represents the user's intent (e.g., Transfer  from Wallet A to Wallet B).
+- **\TransactionLedger\**: Represents the immutable accounting lines. Every transaction generates at least two ledger entries: a Credit (+) and a Debit (-).
 
-## Endpoints
-| Método | Ruta                                 | Descripción                              | Autenticación |
-|--------|--------------------------------------|------------------------------------------|---------------|
-| POST   | /api/transactions/deposit            | Realiza un depósito en una wallet        | ✅ |
-| POST   | /api/transactions/withdraw           | Realiza una extracción                   | ✅ |
-| POST   | /api/transactions/transfer           | Transfiere entre dos wallets             | ✅ |
-| GET    | /api/transactions/{id}               | Obtiene una transacción por ID           | ✅ |
-| GET    | /api/transactions-ledger/{id}        | Obtiene un ledger por ID                 | ✅ |
-| GET    | /api/transactions-ledger/by-transaction/{transactionId} | Ledger vinculado a una transacción | ✅ |
+### 2. Unit of Work (ACID Compliance)
+All financial movements are wrapped in an Entity Framework Core database transaction (IDbContextTransaction).
+The TransactionService orchestrates this:
+1. Validates funds and business rules.
+2. Creates the Transaction record.
+3. Mutates the Wallet balances.
+4. Generates the TransactionLedger entries.
+5. Commits the transaction to SQL Server atomically.
 
----
+### 3. API Endpoints
+| Method | Endpoint | Description |
+|--------|--------------------------------------|------------------------------------------|
+| POST   | /api/transactions/deposit            | Cash-in operation |
+| POST   | /api/transactions/withdraw           | Cash-out operation |
+| POST   | /api/transactions/transfer           | Internal atomic transfer |
+| GET    | /api/transactions/{id}               | Fetch transaction details |
+| GET    | /api/transactionledgers/{txId}       | Fetch ledger lines for a specific transaction |
 
-## Cambios en base de datos
-- Sin cambios en esta etapa: las entidades `Transaction` y `TransactionLedger` ya estaban creadas previamente.
-- Se utilizaron las tablas existentes para persistencia y testeo.
-
----
-
-## Ejemplos de uso
-```bash
-curl -X POST https://localhost:7281/api/transactions/deposit \
--H "Content-Type: application/json" \
--d '{
-  "walletId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-  "amount": 500,
-  "currencyCode": 32
-}'
+## Consequences
+- **Positive:** 100% financial traceability. Zero risk of partial transfers. Easy reconciliation for accounting.
+- **Negative:** Increased database storage requirements (each transfer generates 3 rows instead of 1). Read-heavy operations on the ledger require strict pagination and indexing.
