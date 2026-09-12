@@ -14,16 +14,16 @@
 *A modern, Web3-inspired dark mode UI built with Next.js and TailwindCSS.*
 
 <p align="center">
-  <img src="./assets/images/mockup/compressed/hero.webp" width="48%" alt="Hero Section" />
-  <img src="./assets/images/mockup/compressed/dashboard.webp" width="48%" alt="Dashboard" />
+  <img src="./assets/images/mockup/hero.png" width="48%" alt="Hero Section" />
+  <img src="./assets/images/mockup/dashboard.png" width="48%" alt="Dashboard" />
 </p>
 <p align="center">
-  <img src="./assets/images/mockup/compressed/swap.webp" width="48%" alt="Swap Modal" />
-  <img src="./assets/images/mockup/compressed/virtual-card.webp" width="48%" alt="Virtual Card" />
+  <img src="./assets/images/mockup/swap.png" width="48%" alt="Swap Modal" />
+  <img src="./assets/images/mockup/virtual-card.png" width="48%" alt="Virtual Card" />
 </p>
 <p align="center">
-  <img src="./assets/images/mockup/compressed/transactions.webp" width="48%" alt="Transactions" />
-  <img src="./assets/images/mockup/compressed/swap-receipt.webp" width="48%" alt="Transaction Receipt" />
+  <img src="./assets/images/mockup/transactions.png" width="48%" alt="Transactions" />
+  <img src="./assets/images/mockup/swap-receipt.png" width="48%" alt="Transaction Receipt" />
 </p>
 
 ---
@@ -274,3 +274,4 @@ This project was developed as a Capstone Project for the University Technician i
 ---
 
 Developed by: m 4 l c o m - Backend Developer (.NET)
+
