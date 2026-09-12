@@ -65,75 +65,9 @@ Integrating with external financial APIs (e.g., Currency Exchange) introduces ne
 
 ## 🏗️ System Architecture Flow
 
-`mermaid
-graph TD
-    subgraph "Clients"
-        UI[Web / Mobile Frontend]
-    end
-
-    subgraph "Presentation Layer (API)"
-        Controllers[API Controllers]
-        AuthMiddleware[JWT Auth Middleware]
-        Swagger[Swagger / OpenAPI]
-    end
-
-    subgraph "Application Layer"
-        Services[Business Services]
-        CQRS[Transactions & Ledger Logic]
-        Validators[FluentValidation]
-    end
-
-    subgraph "Domain Layer (Core)"
-        Entities[Rich Domain Entities<br/>User, Wallet, Ledger]
-        Interfaces[Repository Interfaces]
-    end
-
-    subgraph "Infrastructure Layer"
-        EF[EF Core / Data Access]
-        Polly[Polly Resiliency<br/>Circuit Breaker]
-    end
-
-    subgraph "External Services & Data"
-        SQL[(SQL Server)]
-        AKV[[Azure Key Vault]]
-        FX[[FX Rate APIs]]
-    end
-
-    UI -- "HTTPS / REST" --> Controllers
-    Controllers --> AuthMiddleware
-    Controllers --> Services
-    Services --> Validators
-    Services --> CQRS
-    CQRS --> Interfaces
-    EF -. "Implements" .-> Interfaces
-    Services --> EF
-    EF --> SQL
-    AuthMiddleware --> AKV
-    Polly --> FX
-    Services --> Polly
-
-    classDef frontend fill:#f3f4f6,stroke:#374151,stroke-width:2px
-    classDef api fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000
-    classDef app fill:#fef08a,stroke:#ca8a04,stroke-width:2px,color:#000
-    classDef domain fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#000
-    classDef infra fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#000
-    classDef external fill:#e5e7eb,stroke:#4b5563,stroke-width:2px,color:#000
-
-    class UI frontend
-    class Controllers,AuthMiddleware,Swagger api
-    class Services,CQRS,Validators app
-    class Entities,Interfaces domain
-    class EF,Polly infra
-    class SQL,AKV,FX external
-`
-
----
-
-## 📚 Deep Dive Documentation
-
-For a detailed look into the core mechanics of the backend, refer to the internal documentation:
-- [07 - Transaction Ledger Vertical](./backend/docs/07-transaction-ledger-vertical.md)
-- [09 - Wallet Management](./backend/docs/09-wallet-management.md)
+<p align="center">
+  <img src="./assets/images/SmartWallet%20Clean%20Architecture%20Overview.png" width="100%" alt="Clean Architecture Diagram" />
+</p>
 
 ---
 
@@ -205,10 +139,10 @@ The project includes a docker-compose.yml for instant setup of the API and SQL S
 
 `ash
 # 1. Clone the repository
-git clone https://github.com/your-username/smart-wallet.git
+git clone https://github.com/m4lcom/SmartWalletBackend.git
 
 # 2. Navigate to directory
-cd smart-wallet
+cd SmartWalletBackend
 
 # 3. Build and Run containers
 docker-compose up -d --build
