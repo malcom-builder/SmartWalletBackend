@@ -1,39 +1,7 @@
-﻿# Conventions
+﻿# Coding Standards & Conventions
 
-## Ramas
-- `main` → estable
-- `develop` → integración
-- `feature/*` → nuevas funcionalidades
-- `bugfix/*` → correcciones
-- `refactor/*` → reestructuración de código
-- `chore/*` → soporte, mantenimiento, tareas varias
-- `docs/*` → cambios de documentación
-
----
-
-## Commits
-- `feat:` nueva funcionalidad  
-- `fix:` corrección de bug  
-- `docs:` cambios en documentación  
-- `refactor:` reestructuración de código  
-- `test:` pruebas  
-- `chore:` soporte, tareas varias
-- `config:` cambios en configuración de entorno o archivos `appsettings`
-
----
-
-## Pull Requests
-- Descripción clara.
-- Enlace a tarea o documentación relacionada.
-
----
-
-## Solution Items y Documentación
-
-- Todos los archivos de `/docs/` deben estar incluidos como Solution Items en Visual Studio bajo una carpeta lógica `docs`.
-- Los archivos `.env`, `.gitignore` y `README.md` deben estar incluidos como Solution Items en la raíz de la solución.
-- Cualquier cambio en estructura, configuración o documentación debe registrarse en `docs/changelog.md` siguiendo el formato establecido.
-- Cada nueva funcionalidad o cambio significativo debe tener su propia documentación en `/docs/` siguiendo el formato de `docs/new-feature.md`.
-
----
-
+1. **Dependency Injection:** All services must be registered via Extension Methods (e.g., \AddInfrastructureLayer()\) to keep \Program.cs\ clean.
+2. **Async/Await:** Suffix all asynchronous methods with \Async\ (e.g., \GetWalletByIdAsync\). Never use \.Result\ or \.Wait()\ to avoid deadlocks.
+3. **DTOs:** Never expose Domain Entities directly to the API response. Always map Entities to Response DTOs.
+4. **Validation:** Use FluentValidation. Keep validation logic completely out of Controllers and Domain Entities.
+5. **Exceptions:** Do not use try-catch blocks in Controllers. Let exceptions bubble up to the Global Exception Handling Middleware to maintain standardized error responses.

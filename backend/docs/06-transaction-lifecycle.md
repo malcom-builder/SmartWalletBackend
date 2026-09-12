@@ -1,64 +1,15 @@
-# Transaction Lifecycle
+ï»¿# TDD 06: State Machine & Transaction Lifecycle
 
-## Objetivo
+**Type:** Technical Design Document
 
-Definir el ciclo de vida de las transacciones en **SmartWallet**, asegurando consistencia, auditabilidad y trazabilidad entre operaciones atómicas (`Transaction`) y operaciones de negocio (`TransactionLedger`).
+## Overview
+Financial transactions are not binary (Success/Fail). They go through a strict state machine to guarantee consistency, especially during network latency.
 
----
+## The State Machine
+1. **Pending:** The transaction intent is created. Funds are locked but not yet settled.
+2. **Processing:** The Unit of Work begins evaluating business rules (e.g., sufficient funds, account limits).
+3. **Completed:** The transaction passes all rules, balances are mutated, and the Double-Entry Ledger is written. The DB transaction is committed.
+4. **Failed:** If any rule fails, or a concurrency exception occurs, the DB transaction rolls back. The transaction record is marked as Failed.
+5. **Canceled (Admin Only):** A manual override state for reversing erroneous operations.
 
-## Entidades involucradas
-
-### Transaction
-
-- Movimiento atómico sobre una wallet.
-- Tipos: `Deposit`, `Withdrawal`.
-- Cada transacción afecta una sola wallet.
-
-### TransactionLedger
-
-- Registro de la operación de negocio.
-- Tipos: `Deposit`, `Withdrawal`, `Transfer`.
-- En `Transfer`, vincula dos transacciones atómicas mediante `SourceTransactionId` y `DestinationTransactionId`.
-
----
-
-## Estados (`TransactionStatus`)
-
-- `Pending`: transacción creada, aún no ejecutada.
-- `Completed`: ejecutada con éxito.
-- `Failed`: intentada pero fallida.
-- `Canceled`: abortada antes de completarse.
-
----
-
-## Reglas de transición
-
-- Solo una transacción en estado `Pending` puede pasar a `Completed`, `Failed` o `Canceled`.
-- Una vez en estado `Completed`, no puede modificarse.
-- `Failed` y `Canceled` son estados finales.
-
----
-
-## Métodos de dominio
-
-```
-public void MarkAsCompleted()
-{
-    if (Status != TransactionStatus.Pending)
-        throw new InvalidOperationException("Solo una transacción pendiente puede marcarse como Completed.");
-    Status = TransactionStatus.Completed;
-}
-
-public void MarkAsFailed()
-{
-    if (Status == TransactionStatus.Completed)
-        throw new InvalidOperationException("No se puede marcar como Failed una transacción ya completada.");
-    Status = TransactionStatus.Failed;
-}
-
-public void MarkAsCanceled()
-{
-    if (Status == TransactionStatus.Completed)
-        throw new InvalidOperationException("No se puede marcar como Canceled una transacción ya completada.");
-    Status = TransactionStatus.Canceled;
-}
+This lifecycle ensures that even if the server crashes during \Processing\, the database will automatically rollback to \Pending\ or drop the transaction, preventing "money printer" bugs.

@@ -1,37 +1,11 @@
-﻿# [Nombre de la funcionalidad]
+﻿# Feature Development Workflow
 
-## Objetivo
-Breve descripción del propósito de la feature.  
-Ejemplo: "Implementar registro y autenticación de usuarios mediante JWT."
+When adding a new feature (Vertical Slice) to the system, strictly follow this flow:
 
----
-
-## Pasos de implementación
-1. Resumen de cambios clave en código.
-2. Archivos o carpetas creadas/modificadas.
-3. Dependencias o paquetes añadidos.
-
----
-
-## Endpoints
-| Método | Ruta | Descripción | Autenticación |
-|--------|------|-------------|---------------|
-| POST   | /api/auth/register | Registro de un nuevo usuario | ❌ |
-| POST   | /api/auth/login    | Login y emisión de token JWT | ❌ |
-| GET    | /api/users/me      | Datos del usuario autenticado | ✅ |
-
----
-
-## Cambios en base de datos
-- Migración creada: `YYYYMMDDHHmm_add_auth_tables`
-- Tablas nuevas o modificadas:
-  - `Users` (campos: `Id`, `Username`, `PasswordHash`, ...)
-  - `Roles` (opcional)
-
----
-
-## Ejemplos de uso
-```bash
-curl -X POST https://localhost:5001/api/auth/register \
--H "Content-Type: application/json" \
--d '{"username":"demo","password":"1234"}'
+1. **Domain:** Define the Entity and its business rules.
+2. **Application (Contracts):** Create the Request/Response DTOs and Validator classes.
+3. **Application (Interfaces):** Define the Repository and Service interfaces.
+4. **Infrastructure:** Implement the Repository and configure EF Core mappings.
+5. **Application (Implementation):** Implement the Service logic.
+6. **API:** Create the Controller, endpoints, and Swagger annotations.
+7. **Tests:** Write unit tests for the domain rules and integration tests for the endpoints.
