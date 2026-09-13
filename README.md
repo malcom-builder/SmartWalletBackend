@@ -100,7 +100,7 @@ The API is secured using **JWT Bearer Tokens**. Authorization policies ensure da
 
 ## 🔄 Transaction Lifecycle & State Machine
 
-`mermaid
+```mermaid
 graph TD
     subgraph "Transaction Integrity Flow"
         direction TB
@@ -124,7 +124,7 @@ graph TD
     class Failed red;
     class Created,Validate blue;
     class Ledger database;
-`
+```
 
 ---
 
@@ -146,10 +146,11 @@ cd SmartWalletBackend
 
 # 3. Build and Run containers
 docker-compose up -d --build
-`
+```
 
 Access the API documentation at: http://localhost:8080/swagger
 
 ---
 
 Developed by: m 4 l c o m - Backend Developer (.NET)
+
